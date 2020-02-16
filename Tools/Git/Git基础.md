@@ -31,3 +31,32 @@
 
 ​	email =  annjeff@163.com
 
+
+
+### Git 使用SSH 同步代码至 GitHub
+
+**生成 SSH 密钥命令：**`ssh-keygen -t rsa`
+
+![](assets\Git 生成密钥对.png)
+
+![](assets\SSH 生成的私钥与公钥.png)
+
+到 GitHub
+
+![](assets/GitHub 新建 SSH key.png)
+
+
+
+![](assets/GitHub 新建 SSH key 2.png)
+
+
+
+![](assets/成功生成 SSH key.png)
+
+> 此时 GitHub 已经知道我们的`公钥`是什么了，无需输入用户名和密码，可以直接和服务器安全通信。
+
+
+
+和远程仓库建立连接：`git remote add origin git@github.com:annjeff/The-Note-of-Annjeff-for-Interview.git`
+
+将本地仓库推送到远程：`git push origin master`
