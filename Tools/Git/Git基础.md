@@ -59,4 +59,8 @@
 
 和远程仓库建立连接：`git remote add origin git@github.com:annjeff/The-Note-of-Annjeff-for-Interview.git`
 
+**如果出现：fatal: remote origin already exists**
+
+>  使用命令 git remote rm origin，再执行一次 git remote add origin 项目地址
+
 将本地仓库推送到远程：`git push origin master`
