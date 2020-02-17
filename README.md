@@ -18,7 +18,7 @@
 
 
 
-## <img src="assets\网络.png" style="zoom:25%;" /> 计算机网络
+## <img src="assets/网络.png" style="zoom:25%;" /> 计算机网络
 
 ### 物理层
 
@@ -34,7 +34,7 @@
 
 
 
-## <img src="assets\题.png" style="zoom:25%;" /> 算法题解
+## <img src="assets/题.png" style="zoom:25%;" /> 算法题解
 
 ---
 
@@ -42,5 +42,5 @@
 
 ## <img src="assets/Tools.png" style="zoom:25%;" /> Tools
 
-- ### <img src="assets\git.png" style="zoom:15%;" /> [Git](Tools/Git/Git基础.md)
+- ### <img src="assets/git.png" style="zoom:15%;" /> [Git](Tools/Git/Git基础.md)
 
