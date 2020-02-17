@@ -37,21 +37,21 @@
 
 **生成 SSH 密钥命令：**`ssh-keygen -t rsa`
 
-![](assets\Git 生成密钥对.png)
+<img src="assets/Git 生成密钥对.png" style="zoom:61%;" />
 
-![](assets\SSH 生成的私钥与公钥.png)
+<img src="assets/SSH 生成的私钥与公钥.png" style="zoom:61%;" />
 
 到 GitHub
 
-![](assets/GitHub 新建 SSH key.png)
+<img src="assets/GitHub 新建 SSH key.png" style="zoom:61%;" />
 
 
 
-![](assets/GitHub 新建 SSH key 2.png)
+<img src="assets/GitHub 新建 SSH key 2.png" style="zoom:61%;" />
 
 
 
-![](assets/成功生成 SSH key.png)
+<img src="assets/成功生成 SSH key.png" style="zoom:61%;" />
 
 > 此时 GitHub 已经知道我们的`公钥`是什么了，无需输入用户名和密码，可以直接和服务器安全通信。
 
