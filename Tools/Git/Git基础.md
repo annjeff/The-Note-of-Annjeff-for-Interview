@@ -59,8 +59,25 @@
 
 和远程仓库建立连接：`git remote add origin git@github.com:annjeff/The-Note-of-Annjeff-for-Interview.git`
 
-**如果出现：fatal: remote origin already exists**
+- **如果出现：fatal: remote origin already exists**
 
 >  使用命令 git remote rm origin，再执行一次 git remote add origin 项目地址
 
 将本地仓库推送到远程：`git push origin master`
+
+- **git push 出现：rejected master -> master(non-fast-forward)**
+
+  <img src="assets/Git push 出错.png" style="zoom:61%;" />
+
+> 解决方案一：[推荐] 利用强制覆盖方式，用本地代码替代 git 仓库内容
+>
+> `git push -f origin master`
+
+> 解决方案二：先把 git 的代码 fetch 到本地，然后 merge ，最后 push
+>
+> `git fetch`
+>
+> `git merge`
+
+
+

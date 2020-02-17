@@ -1,4 +1,4 @@
-# <img src="assets\note.png" style="zoom:50%;" /> The-Note-of-Annjeff-for-Interview
+# <img src="assets/note.png" style="zoom:50%;" /> The-Note-of-Annjeff-for-Interview
 
 ## <img src="assets/C++logo.jpg" style="zoom:25%;" /> C++ 基础
 
