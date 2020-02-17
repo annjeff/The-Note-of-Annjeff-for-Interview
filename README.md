@@ -40,7 +40,7 @@
 
 
 
-## <img src="assets\tools.png" style="zoom:25%;" /> Tools
+## <img src="assets/Tools.png" style="zoom:25%;" /> Tools
 
-- ### <img src="assets\git.png" style="zoom:15%;" /> [Git](Tools\Git\Git基础.md)
+- ### <img src="assets\git.png" style="zoom:15%;" /> [Git](Tools/Git/Git基础.md)
 
