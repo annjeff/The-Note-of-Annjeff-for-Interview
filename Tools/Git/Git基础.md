@@ -14,7 +14,7 @@
 
 		1. 记录文件的所有历史变化
   		2. 随时可恢复到任何一个历史状态
-        		3. 多人协作开发或修改项目
+                		3. 多人协作开发或修改项目
             		4. 错误可恢复
 
 ### 1.4 什么是 GitHub？
@@ -85,9 +85,9 @@
 
 #### 2.4.1 新建文件
 
-<img src="assets/New File.png" style="zoom:75%;" />
+<img src="assets/New file.png" style="zoom:75%;" />
 
-<img src="assets/New File 2.png" style="zoom:75%;" />
+<img src="assets/New file 2.png" style="zoom:75%;" />
 
 #### 2.4.2 编辑文件
 
