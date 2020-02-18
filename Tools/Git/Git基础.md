@@ -179,17 +179,94 @@
 
 ​	email =  annjeff@163.com
 
+### 4.2 初始化一个新的 Git 仓库
+
+- 在任意位置新建一个文件夹，右键选择 Git Bash
+- 使用 git init 命令初始化该文件夹
+
+<img src="assets/Git init.png" style="zoom:75%;" />
+
+### 4.3 查看文件状态
+
+> 使用 `git status` 命令，可以查看文件状态
+
+### 4.4 把文件提交到暂存区
+
+> `git add fileName`
+
+### 4.5 把暂存区文件提交到仓库
+
+>  `git commit -m "描述信息"`
+
+### 4.6 删除仓库文件
+
+#### 4.6.1 删除工作目录里文件
+
+> `rm -f fileName`
+
+#### 4.6.2 删除暂存区文件（勿使用）
+
+> `git rm 'fileName'`
+
+#### 4.6.3 删除文件后需要提交操作
+
+> `git commit -m '提交描述'`
 
 
-### Git 使用SSH 同步代码至 GitHub
 
-**生成 SSH 密钥命令：**`ssh-keygen -t rsa -C 任意邮箱` 其中，`rsa`为加密算法
+---
+
+## 五、Git 管理远程仓库
+
+### 5.1 使用远程仓库的目的
+
+> **备份，实现代码共享、集中化管理**
+
+<img src="assets/Git remote repository.png" style="zoom:75%;" />
+
+<img src="assets/本地仓库同步到远程仓库.png" style="zoom:75%;" />
+
+
+
+### 5.2 git 克隆操作
+
+#### 5.2.1 目的
+
+​		将远程仓库（GitHub对应的项目）复制到本地
+
+<img src="assets/git clone.png" style="zoom:75%;" />
+
+#### 5.2.2 使用代码克隆仓库
+
+> `git clone 仓库地址`
+>
+> git clone https://github.com/Annjeff/test.git
+
+<img src="assets/Cloned.png" style="zoom:75%;" />
+
+### 5.3 将本地仓库同步到 GitHub
+
+#### 5.3 .1 提交到远端命令
+
+> `git push `
+
+<img src="assets/Git push.png" style="zoom:75%;" />
+
+#### 5.3.2 本地仓库使用 HTTPS 同步时出错解决办法
+
+<img src="assets/Git push 因未登陆出错解决.png" style="zoom:75%;" />
+
+#### 5.3.3 Git 使用SSH 同步代码至 GitHub
+
+##### 5.3.3.1 生成 SSH 密钥
+
+>  **生成 SSH 密钥命令：**`ssh-keygen -t rsa -C 任意邮箱` 其中，`rsa`为加密算法
 
 <img src="assets/Git 生成密钥对.png" style="zoom:61%;" />
 
 <img src="assets/SSH 生成的私钥与公钥.png" style="zoom:61%;" />
 
-到 GitHub
+##### 5.3.3.2 到 GitHub 输入 SSH 密钥
 
 <img src="assets/GitHub 新建 SSH key.png" style="zoom:61%;" />
 
@@ -203,9 +280,11 @@
 
 > 此时 GitHub 已经知道我们的`公钥`是什么了，无需输入用户名和密码，可以直接和服务器安全通信。
 
+##### 5.3.3.3 和远端建立连接
 
+>  和远程仓库建立连接：`git remote add origin git@github.com:annjeff/The-Note-of-Annjeff-for-Interview.git`
 
-和远程仓库建立连接：`git remote add origin git@github.com:annjeff/The-Note-of-Annjeff-for-Interview.git`
+##### 5.3.3.4 和远端连接出错
 
 - **如果出现：fatal: remote origin already exists**
 
@@ -213,9 +292,11 @@
 
 将本地仓库推送到远程：`git push origin master`
 
-- **git push 出现：rejected master -> master(non-fast-forward)**
+#### 5.3.4 git push 提交出错解决办法
 
-  <img src="assets/Git push 出错.png" style="zoom:61%;" />
+>  **git push 出现：rejected master -> master(non-fast-forward)**
+
+<img src="assets/Git push 出错.png" style="zoom:61%;" />
 
 > 解决方案一：[推荐] 利用强制覆盖方式，用本地代码替代 git 仓库内容
 >
@@ -229,9 +310,7 @@
 
 
 
-### 使用 `https:`方式将本地代码推送到远端
 
-> 使用 https: 方式将本地代码推送到远端，需要验证`用户名`和`密码`
 
 
 
