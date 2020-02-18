@@ -14,8 +14,8 @@
 
 		1. 记录文件的所有历史变化
   		2. 随时可恢复到任何一个历史状态
-    		3. 多人协作开发或修改项目
-      		4. 错误可恢复
+        		3. 多人协作开发或修改项目
+            		4. 错误可恢复
 
 ### 1.4 什么是 GitHub？
 
@@ -145,33 +145,31 @@
   - 新建 pull request
   - 等待作者操作（合并）
 
+---
 
 
 
+## 三、Git 基本概念
+
+### Git 的工作流程
+
+<img src="assets/The process of git.png" style="zoom:100%;" />
+
+---
 
 
 
+## 四、Git 初始化及仓库创建和操作
 
-
-## Git 基本概念
-
-## Git 常用命令
-
-### Initialization a Repository in an Existing Directory
-
-> cd .../my_project
->
-> git init
-
-上述命令，创建一个名为`.git`的子目录
-
-### Git 配置
+### 4.1 Git 基础设置
 
 > 使用 Git 的第一件事就是设置名字和 email, 这是提交 commit 时的`签名`.
 
 `git config --global user.name "annjeff"`
 
 `git config --global user.email "annjeff@163.com"`
+
+`git config --list` 查看设置
 
 执行上述命令后，主目录(home directory)建立一个叫`~/.gitconfig`的文件.内容一般如下：
 
