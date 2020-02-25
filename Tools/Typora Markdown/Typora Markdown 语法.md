@@ -159,6 +159,8 @@ Typora 关于图片的文档：[http://support.typora.io//Images/](https://link.
 
 ### 9.2 链接
 
+### 9.2.1 链接
+
 Markdown 支持两种风格的链接：
 
 1. 内联
@@ -175,6 +177,44 @@ This is [an example](http://example.com/"Title") inline link.
 
 [This link](http://example.net) has no title attribute.
 ```
+
+### 9.2.2 内部链接
+
+你可以将标题设置为一个连接，我们会创建一个书签，允许你点击标题后，跳转到文章中指定的部分，例如：
+
+Ctrl + Click[This link](#块元素)会跳转到块元素标题的位置 ，要查看如何写入，请移动光标或单击该链接，按⌘键将元素展开为markdown源。
+
+#### 9.2.3 参考链接
+
+参考链接使用第二组方括号，您可以在其中放置您选择的标签，来识别链接：
+
+```
+This is [an example][id] reference-style link.
+
+Then, anywhere in the document,you define your link label like this, on a line by itself:
+[id]:http://example.com/ "Optical Title Here"
+```
+
+This is [an example][Google] reference-style link.
+
+隐式链接名称快捷方式允许您省略链接的名称，在这种情况下，将链接文本本身用作名称。 只需使用一组空白方括号 - 例如将Google“Google”链接到google.com网站，您可以简单地写：
+
+```
+[Google][]
+And then define the link:
+
+[Google]: http://google.com/
+```
+
+
+
+#### 9.2.4 URL 地址
+
+Typora 允许插入 URL 作为链接，用尖括号`<>`包起来
+
+<i@typora.io> 
+
+Typora 也会自动链接标准的 URLs, 例如：<www.google.com>
 
 
 
@@ -197,3 +237,6 @@ This is [an example](http://example.com/"Title") inline link.
 
 
 
+
+
+[Google]: 
