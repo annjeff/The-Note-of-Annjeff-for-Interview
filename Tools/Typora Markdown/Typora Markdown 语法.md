@@ -84,7 +84,33 @@ Markdown 使用电子邮件风格 `>` 字符进行块引用。
 
 ## 五、强调
 
+### 5.1 加粗
 
+Markdown 将两个连续 `*` 和 `_`视为加粗的指标，
+
+### 5.2 斜体
+
+Markdown 将一个 `*`和 `_`视为斜体标志
+
+### 5.3 删除线
+
+GFM 添加了标准 Markdown 语法没有的 下划线语法。
+
+`~~`
+
+~~Mistaken text.~~
+
+### 5.4 下划线
+
+下划线由原始的 HTML 提供。
+
+<u> Underline </u>
+
+### 5.5 emoji 表情：
+
+输入emoji语法：`:smile`
+
+:smiley_cat:
 
 ---
 
@@ -239,4 +265,4 @@ Typora 也会自动链接标准的 URLs, 例如：<www.google.com>
 
 
 
-[Google]: 
+[Google]: www.google.com	"google"
