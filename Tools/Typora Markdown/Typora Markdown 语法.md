@@ -1,6 +1,18 @@
 # Typora Markdown 语法
 
+---
+
+
+
 ----
+
+## 零、Typora 官方指导
+
+<http://support.typora.io/Markdown-Reference/>
+
+---
+
+
 
 ## 一、标题和目录
 
@@ -140,7 +152,6 @@ $$
 \frac{\partial X}{\partial v} &  \frac{\partial Y}{\partial v} & 0 \\
 \end{vmatrix}
 $$
-
 
 ---
 
