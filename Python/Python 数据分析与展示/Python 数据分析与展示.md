@@ -126,15 +126,140 @@ print(a.itemsize)   # 4
 
 ### 2.6 ndarray 的元素类型
 
-| 数据类型 |                           说明                           |
-| :------: | :------------------------------------------------------: |
-|   bool   |                 布尔类型，True 或 False                  |
-|   intc   |    与 C 语言中的 int 类型一致，一般是 int32 或 int64     |
-|   intp   | 用于索引的整数，与 C 语言中 size_t  一致，int32 或 int64 |
-|   int8   |             字节长度的整数，取值：[-128,127]             |
-|  int16   |          16 位长度的整数，取值：[-32768,32767]           |
-|  int32   |             32 位长度的整数，取值：[-2^31^,]             |
-|  int64   |                                                          |
+|  数据类型  |                           说明                           |
+| :--------: | :------------------------------------------------------: |
+|    bool    |                 布尔类型，True 或 False                  |
+|    intc    |    与 C 语言中的 int 类型一致，一般是 int32 或 int64     |
+|    intp    | 用于索引的整数，与 C 语言中 size_t  一致，int32 或 int64 |
+|    int8    |             字节长度的整数，取值：[-128,127]             |
+|   int16    |          16 位长度的整数，取值：[-32768,32767]           |
+|   int32    |         32 位长度的整数，取值：[-2^31^,2^31^ -1]         |
+|   int64    |        64 位长度的整数，取值：[-2^63^ ,2^63^ -1]         |
+|   uint8    |              8 位无符号整数，取值：[0,255]               |
+|   uint16   |             16 位无符号整数，取值：[0,65535]             |
+|   uint32   |           32 位无符号整数，取值：[0,2^31^ -1]            |
+|   uint64   |           64 位无符号整数，取值：[0,2^64^ -1]            |
+|  float16   |  16 位半精度浮点数，1 位符号位，5位指数位，10 位尾数位   |
+|  float32   |  32 位半精度浮点数，1 位符号位，8位指数位，23 位尾数位   |
+|  float64   |  64 位半精度浮点数，1 位符号位，11位指数位，52 位尾数位  |
+| complex64  |           复数类型，实部和虚部都是 32位浮点数            |
+| complex128 |           复数类型，实部和虚部都是 64 位浮点数           |
+
+ndarray 为什么要支持这么多种元素的类型呢？
+
+对比：Python 语法仅支持：**整数、浮点数、复数** 3种类型
+
+ANS:
+
+- 科学计算涉及数据较多，对存储和性能都有较高要求。
+- 对元素类型精细定义，有助于 NumPy 合理使用存储空间并优化性能。
+- 对元素类型精细定义，有助于程序员对程序规模有合理评估。
+
+### 2.7 ndarray 支持非同质对象
+
+- ndarray 数组可以由**非同质**对象构成
+- 非同质 ndarray **元素**为对象类型
+- 非同质 ndarray 对象**无法有效发挥 NumPy 优势，尽量避免使用
+
+```python
+# ndarray 对象 支持 非同质 对象
+x = np.array([[1,2,3,4,5],
+              [9,8,7,6]])
+print(x.shape) # (2,)
+
+print(x.dtype) # object
+
+print(x.itemsize) # 8
+
+print(x.size) # 2
+```
+
+### 2.8 ndarray 数组创建方法
+
+- 从 Python 中的列表、元组等类型创建 ndarray 数组
+
+    ```
+    x = np.array(list/tuple)
+    x = np.array(list/tuple, dtype=np.float32)
+    # 当 np.array() 不指定 dtype 时，NumPy 将根据数据情况关联一个 dtype
+    ```
+
+    ```python
+    ## 从列表元组中 创建 ndarray 对象
+    x = np.array([0, 1, 2, 3])
+    print(x) # [0 1 2 3]
+    
+    x2 = np.array((4, 5, 6, 7))
+    print(x2) # [4 5 6 7]
+    
+    x3 = np.array([ [1, 2], [9, 8], (0.1, 0.2)])
+    print(x3) # [[1.  2. ]
+              # [9.  8. ]
+              # [0.1 0.2]]
+    ```
+
+- 使用 NumPy 中函数创建 ndarray 数组，如：arange, ones, zeros等
+
+    |         函数          |                         说明                          |
+    | :-------------------: | :---------------------------------------------------: |
+    |     np.arange(n)      | 类似 range() 函数，返回 ndarray 类型，元素从 0 到 n-1 |
+    |    np.ones(shape)     | 根据 shape 生成一个全 1 的数组，shape 是一个元组类型  |
+    |    np.zeros(shape)    | 根据 shape 生成一个全 0 的数组，shape 是一个元组类型  |
+    |  np.full(shape, val)  |      根据 shape 生成一个数组，每个元素值都是 val      |
+    |       np.eye(n)       |  创建一个正方形的 n*n 单位矩阵， 对角线为1，其余为 0  |
+    |   np.ones_like(arr)   |       根据数组 arr 的形状，生成一个全 1 的数组        |
+    |  np.zeros_like(arr)   |       根据数组 arr 的形状，生成一个全 0 的数组        |
+    | np.full_like(arr,val) |     根据数组 arr 的形状，生成一个值为 val 的数组      |
+
+    ```python
+    ## 使用 NumPy中的函数，创建 ndarray()
+    arr1 = np.arange(10)
+    print(arr1)
+    
+    arr2 = np.ones((2,3))
+    print(arr2)
+    
+    arr3 = np.zeros((2,3),dtype=np.int32)
+    print(arr3)
+    
+    arr4 = np.eye(3)
+    print(arr4)
+    
+    arr5 = np.full((2,3),9)
+    print(arr5)
+    
+    arr6 = np.ones((2, 3, 4))
+    print(arr6)
+    
+    # 根据 数组 arr1 的形状，生成一个全 1 的数组
+    arr7 = np.ones_like(arr1)
+    # 根据 数组 arr1 的形状，生成一个全 0 的数组
+    arr8 = np.zeros_like(arr1)
+    # 根据 数组 arr1 的形状，生成一个全 8 的数组
+    arr9 = np.full_like(arr1,8)
+    
+    arr10 = np.linspace(1,10,4)
+    print(arr10)
+    ```
+
+    
+
+- 使用 NumPy 中的其他函数创建 ndarray 数组
+
+    |       函数       |                  说明                  |
+    | :--------------: | :------------------------------------: |
+    |  np.linspace()   | 根据起止数据等间距地填充数据，形成数组 |
+    | np.concatenate() |   将两个或多个数组合并成一个新的数组   |
+
+```python
+# linspace 有个 endpoint 指定 10 是否是生成的最后一个元素
+arr11 = np.linspace(1,10,4, endpoint=False)
+print(arr11)
+
+# 将多个数组连接起来
+arr12 = np.concatenate( (arr7,arr8) )
+print(arr12)
+```
 
 
 
