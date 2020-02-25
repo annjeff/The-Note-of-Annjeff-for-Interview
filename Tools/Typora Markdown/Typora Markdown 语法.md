@@ -90,23 +90,91 @@ Markdown 使用电子邮件风格 `>` 字符进行块引用。
 
 ## 六、代码块
 
+Typora 只支持 GitHub Flavored Markdown 中的栅栏。
 
+不支持原始代码块中的标记。
+
+输入，==```==然后按下`enter`键
+
+```python
+print("Hello world!")
+```
 
 ---
 
 ## 七、数学公式
 
+可以使用**MathJax**渲染**Latex**数学表达式。
+
+输入：`$$`然后按下`Enter`键，将触发一个接收 `Tex/LaTex`源码的输入范围。
+$$
+\mathbf{V}_1 \times \mathbf{V}_2 =  \begin{vmatrix} 
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+\frac{\partial X}{\partial u} &  \frac{\partial Y}{\partial u} & 0 \\
+\frac{\partial X}{\partial v} &  \frac{\partial Y}{\partial v} & 0 \\
+\end{vmatrix}
+$$
 
 
 ---
 
 ## 八、表格
 
+输入`|第一个标题|第二个标题| 然后按下 `,`Enter`键，将创建一个有两列的表格。
+
+| First Header | Second Header |
+| :----------: | :-----------: |
+|    数据1     |     数据2     |
+
+> 通过冒号`:`在标题行中，可以定义文本对齐方式
+>
+> - 左边冒号，左对齐
+> - 右边冒号，右对齐
+> - 两边冒号，中间对齐
+
+```
+| Left-Aligned | Center-Aligned | Right-Aligned |
+|:------------ | :-------------:| ------------: |
+| col 1        | col 2          | col 3         |
+```
+
 
 
 ---
 
 ## 九、图片与链接
+
+### 9.1 图片
+
+图片和链接，看起来一样，但是图片需要在链接前加上 `!`
+
+图片语法：
+
+```
+![](/home/img.png)
+![](/home/img.png "Optical title")
+```
+
+Typora 关于图片的文档：[http://support.typora.io//Images/](https://link.jianshu.com/?t=http://support.typora.io//Images/)
+
+### 9.2 链接
+
+Markdown 支持两种风格的链接：
+
+1. 内联
+2. 引用
+
+在这两种样式中，链接文本由`[方括号]`分隔。
+
+要创建内联链接，请在链接文本的关闭括号后**立即**使用一组常规括号。
+
+在括号内，将链接所在的网址与链接的可选标题一起放在引号中。
+
+```
+This is [an example](http://example.com/"Title") inline link.
+
+[This link](http://example.net) has no title attribute.
+```
 
 
 
