@@ -261,5 +261,47 @@ arr12 = np.concatenate( (arr7,arr8) )
 print(arr12)
 ```
 
+### 2.9 ndarray 数组的维度变换
 
+|        方法        |                         说明                          |
+| :----------------: | :---------------------------------------------------: |
+|  .reshape(shape)   | 不改变数组元素，返回一个 shape 形状的数组，原数组不变 |
+|   .resize(shape)   |         与 .reshape() 功能一致，但修改原数组          |
+| .swapaxes(ax1,ax2) |          将数组 n 个维度中的两个维度进行调换          |
+|     .flatten()     |   对数组进行降维，返回折叠后的一维数组，原数组不变    |
+
+```python
+## ndarray 数组的维度变换
+arr13 = np.ones((2,3,4), dtype=np.int32)
+print(arr13)
+
+arr14 = arr13.reshape((3,8))
+print(arr14) # reshape 不改变原数组
+arr13.resize((3,8))
+print(arr13)    # resize 改变原数组
+```
+
+
+
+### 2.10 ndarray 数组的类型变换
+
+> new_arr = arr.astype(new_type)
+
+> astype() 方法一定会创建新的数组（原始数据的一个拷贝），即使两个类型一致。
+
+```pyhotn
+## ndarray 数组的类型变换
+new_arr13 = arr13.astype(np.float32)
+print(new_arr13)
+```
+
+### 2.11 ndarray 数组向列表的转换
+
+> lst = arr.tolist()
+
+```python
+## 数组向列表转换
+arr14 = np.full((2, 3, 4), 25, dtype=np.int32)
+print(arr14)
+```
 
