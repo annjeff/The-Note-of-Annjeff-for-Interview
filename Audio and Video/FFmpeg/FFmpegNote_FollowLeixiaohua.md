@@ -134,4 +134,25 @@ ffplay input.avi
     - 对于**封装格式中的视频，徐亚先从封装格式中提取视频码流，然后再进行解码。**
     - 例如解码 MKV 格式的视频文件，就是 MKV----> H.264码流---->YUV
 
-### 3.2 
+### 3.2 FFmpeg 库简介
+
+- avcodec: 编解码（最重要的库）
+- avformat: 封装格式处理
+- avfilter: 滤镜特效处理
+- avdevice: 各种设备的输入输出
+- avutil: 工具库（大部分都需要这个库支持）
+- postproc: 后加工
+- swresample: 音频采样数据格式转换
+- swscale: 视频像素数据格式转换
+
+### 3.3 FFmpeg 解码函数简介
+
+- av_register_all(): 注册所有组件
+- avformat_open_input(): 打开**输入视频文件**
+- avformat_find_stream_info(): **获取视频文件信息**
+- avcodec_find_decoder()：查找**解码器**
+- avcodec_open2(): 打开**解码器**
+- av_read_frame(): 从**输入文件**读取**一帧压缩数据**
+- avcodec_decode_video2():**解码一帧压缩数据**
+- avcodec_close()：关闭**解码器**
+- avformat_close_input(): 关闭**输入视频文件**
