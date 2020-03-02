@@ -93,17 +93,40 @@
 
 ### 2.4 录制命令
 
+#### 2.4.0 桌面与音频捕获设备
+
+FFmpeg Devices Documentation: <https://ffmpeg.org/ffmpeg-devices.html#Options-20>
+
+- Mac
+
+    - avfoundation
+
+- Windows
+
+    - dshow (Windows DirectShow input device.)
+
+        - 依赖：screen-capture-recorder (include virtual-audio-capturer)  桌面捕获设备 和 音频捕获设备
+
+        - > ```
+            > ffmpeg -list_devices true -f dshow -i dummy
+            > ```
+            >
+            > Print the list of DirectShow supported devices and exit
+
+    - gdigrab (Win32 GDI-based screen capture device, This device allows you to capture a region of the display on Windows.)
+
+- Linux 
+
+    - alsa （Advanced Linux Sound Architecture）
+    - X11 grab
+
 #### 2.4.1 录制视频
+
+- Mac
 
 > ffmpeg -f avfoundation -i 1 -r 30 out.yuv
 >
 > -f：指定使用 avfoundation 库采集数据 （Mac 系统专用的专用于音视频处理）
->
-> ​       Linux 使用 alsa 库（Advanced Linux Sound Architecture）
->
-> ​		FFmpeg Devices Documentation
->
-> ​		<https://ffmpeg.org/ffmpeg-devices.html#Options-20>
 >
 > -i: 指定从哪采集数据，它是一个**文件索引号**
 >
@@ -115,6 +138,23 @@
 >
 > out.yuv: **yuv数据是一种原始的数据格式**，采集到是什么样子，存成什么样子，无压缩，数据量大。
 
+- Windows 抓取屏幕
+
+```
+# -t 10 for 10 seconds recording
+ffmpeg -f dshow  -i video="screen-capture-recorder"  -r 20 -t 10 screen-capture.mp4
+```
+
+
+
+- Windows 抓取摄像头
+
+```
+ffmpeg -f dshow -i video="Camera" annjeffCamera.mp4
+```
+
+
+
 #### 2.4.2 录制音频
 
 > ffmpeg -f avfoundation -i :0 out.wav
@@ -122,6 +162,14 @@
 > :0 代表**音频设备**
 
 #### 2.4.3 FFmpeg 是否可以同时录制视频与音频？
+
+当然可以！！！
+
+- Windows 同时录制音视频
+
+> ffmpeg -f dshow -i audio="virtual-audio-capturer":video="screen-capture-recorder" annjeffVideo.mp4
+>
+> 同时指定了获取位置与视频获取位置，保存格式为：.mp4
 
 ### 2.5 分解与复用
 
