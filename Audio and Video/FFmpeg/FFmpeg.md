@@ -179,19 +179,49 @@ ffmpeg -f dshow -i video="Camera" annjeffCamera.mp4
 >
 > 同时指定了获取位置与视频获取位置，保存格式为：.mp4
 
-### 2.5 分解与复用
+### 2.5 分解(demuxer)与复用(muxer)
 
-> 例如，将视频中的音频抽取出来（分解）
+> 例如，将视频中的音频抽取出来（分解），视频如果抽取出来是未解码的 `H.264`文件，音频抽取出来是未解码的`AAC` 文件。
 
 #### 2.5.1 多媒体格式转换
 
-> ffmpeg -i out.mp4 -vcodec copy -acodec copy out.flv
->
-> -i: 输入文件 
->
-> -vcodec copy: 视频编码处理方式
->
-> -acodec copy: 音频编码处理方式
+```
+ffmpeg -i out.mp4 -vcodec copy -acodec copy out.flv
+
+-i: 输入文件 
+-vcodec copy: 视频编码处理方式
+-acodec copy: 音频编码处理方式
+
+copy：意味着不对视频音频参数进行调整
+
+# 抽取 in.mov 视频中的视频，保存为 h.264
+ffmpeg -i in.mov -an -vcodec copy out.h264
+-an:表示不要音频 [n:代表 no]
+
+# 抽取音频，不要视频(抽取了音频，保存为.aac 格式)
+ffmpeg -i in.mov -acodec copy -vn out.aac
+
+```
+
+
+
+### 2.6 处理原始数据命令
+
+#### 2.6.1 什么是原始数据
+
+> 这里，我们讲的`原始数据即`**ffmpeg 解码后的数据** ，音频是`PCM 数据`；视频是 `YUV 数据`。
+
+#### 2.6.2 FFmpeg 提出 YUV 数据
+
+```
+ffmpeg -i input.mp4 -an -c:v rawvideo -pix_fmt yuv420p out.yuv
+# -an:表示结果里不包含音频
+# -c:v rawvideo: 对视频使用 rawvideo 进行编码
+# -pix_fmt yuv420p：指定像素格式为：yuv420p
+# yuv,4:2:0 是音视频最常用的格式
+```
+
+
 
 
 
