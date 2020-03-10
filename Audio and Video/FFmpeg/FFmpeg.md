@@ -229,6 +229,86 @@ ffmpeg -i input.mp4 -an -c:v rawvideo -pix_fmt yuv420p out.yuv
 # yuv,4:2:0 是音视频最常用的格式
 ```
 
+> Note: .yuv 视频无法直接使用 ffplay 播放，需要制定视频宽高才能顺利播放
+>
+> ```
+> ffplay -s widthxheight xxx.yuv
+> ```
+
+#### 2.6.3 FFmpeg 提取 PCM 数据
+
+```
+ffmpeg -i input.mp4 -vn -ar 44100 -ac 2 -f s16le out.pcm
+# -vn: 不要视频
+# -ar 44100：a 代表 audio r 代表 read，音频的采样率
+# -ac 2: a 代表 audio c 代表 channel ，2 指定声音双声道
+# -f s16le: 抽取出的音频的存储格式为  sl16le
+```
+
+> Note: xxx.pcm 数据同样无法直接使用 ffplay 播放，需要指定 采样率，声道数，数据存储格式
+>
+> `ffplay -ar 44100 -ac 2 -f s16le out.pcm`
+
+### 2.7 FFmpeg 滤镜命令
+
+> 视频加减水印、画中画、视频裁剪、音频倍速都可通过滤镜实现。
+
+### 2.7.1 FFmpeg 滤镜工作流程
+
+<img src="assets/2.7.1FFmpeg滤镜工作流程.png" style="zoom:61%;" />
+
+ #### 2.7.2 FFmpeg 滤镜命令
+
+```
+ffmpeg -i input.mov -vf crop=in_w-200:in_h-200 -c:v libx264 -c:a copy out.mp4
+# 可以指定x,y 起始点， 默认是中心点
+# -vf crop=in_w-200:in_h-200：-vf 代表视频滤镜，具体是 crop滤镜，in_w 视频宽度 in_w-200 本身视频宽度 - 200
+# -c:v libx264：指定视频的编码器
+```
+
+### 2.8 裁剪与合并命令
+
+#### 2.8.1 FFmpeg 音视频裁剪
+
+```
+ffmpeg -i input.mp4 -ss 00:00:00 -t 10 out.ts
+# -ss 00:00:00: 指定开始裁剪时间
+# -t 10: 指定裁剪时长
+```
+
+#### 2.8.2 FFmpeg 音视频合并
+
+```
+ffmpeg -f concat -i inputs.txt out.flv
+# -f concat: 告诉 FFmpeg 对后面文件进行拼接
+# -i inputs.txt: 文件列表，记录了所有希望合并的文件名字(*.txt 即可)
+## *.txt 内容为：'file filename'格式（每一行代表一个单独的文件）
+
+> 将 dream.mp4 与 dream.flv 拼接到一起
+> file 'dream.mp4'
+> file 'dream.flv'
+```
+
+### 2.9 图片 / 视频互转命令
+
+#### 2.9.1 视频转图片
+
+```
+ffmpeg -i input.flv -r 1 -f image2 image-%3d.jpeg
+# -r 1: 指定转换图片的帧率，一秒转1张图片
+# -f image2: 指定多媒体文件转成什么格式，image 是一种协议格式，image2 是第二版
+# image-%3d.jpeg: 输出文件，%3d 有3 个数字组成
+```
+
+#### 2.9.2 图片转视频
+
+```
+ffmpeg -i image-%3d.jpeg out.mp4
+# 要转视频的图片命名需要指定固定的格式
+```
+
+
+
 
 
 
