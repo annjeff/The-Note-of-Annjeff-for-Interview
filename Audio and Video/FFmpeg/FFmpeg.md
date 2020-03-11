@@ -307,6 +307,25 @@ ffmpeg -i image-%3d.jpeg out.mp4
 # 要转视频的图片命名需要指定固定的格式
 ```
 
+### 2.10 直播推流 / 拉流
+
+#### 2.10.1 直播推流
+
+```
+ffmpeg -re -i input.mp4 -c copy -f flv rtmp://server/live/streamName
+# -re: 减慢帧率速度，本地文件播放，会尽可能快的播放。加了 -re 会让帧率减慢
+# -c copy:音视频编解码 -c:a 专门制定音频 -c:v 专门制定视频
+# -f flv: 指定的推出去流的格式
+# server(IP 低着)
+
+```
+
+#### 2.10.2 直播拉流
+
+```
+ffmpeg -i rtmp://server/live/streamName -c copy save.mp4
+```
+
 
 
 
