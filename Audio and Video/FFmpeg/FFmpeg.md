@@ -451,5 +451,157 @@ gcc -g -O2 -o app test.c -I... -L... -l
         | libswresample |            提供了**混音**和**重采样**             |
         |  libswscale   |         实现了**色彩转换**和**缩放**功能          |
 
+### 5.2 FFmpeg 日志系统
+
+```c
+#include <libavutil/log.h>
+// 设置日志级别，设置哪些日志需要打印，此处设置 DEBUG 级别日志
+// DEDUG 及之上所有日志都会打印出来	Warning、Error、Info 都会打印出来
+// DEBUG ：是FFmpeg 系统中最低级别的日志
+// 如果设置了 ERROR 级别的日志，DEBUG 级别的日志则不会被打印出来
+av_log_set_level(AV_LOG_DEBUG)
+// 第一个参数：NULL
+// 第二个参数：日志级别
+// 第三个及以后与 printf 类似
+av_log(NULL, AV_LOG_INFO, "...%s\n", op)
+
+// gcc -g -o ffmpeg_log ffmpeg_log.c -lavutil   
+```
+
+- **常用日志级别**
+    - AV_LOG_ERROR
+    - AV_LOG_WARNING
+    - AV_LOG_INFO
+
+### 5.3 FFmpeg 文件与目录操作
+
+> Note: `pkg-config`本身是一个 linux 命令,其功能是**用于获得某一个库/模块的所有编译相关的信息**.
+>
+> pkg-config --list libavformat 
+>
+> // 可以找到 libavformat 库的路径
+
+- 文件的删除
+
+    - avpriv_io_delete()
+
+    - ```c
+        #include <stdio.h>
+        #include <libavformat/avformat.h>
+        #include <libavutil/log.h>                                                             
+        
+        int main(int argc, char* argv[])
+        {
+            // 删除一个文件
+            int ret;
+            ret = avpriv_io_delete("./mydeletedFile.txt");
+            if(ret < 0){ 
+                av_log(NULL, AV_LOG_ERROR, "Failed to delete file mydeletedFile.txt\n");
+                return -1; 
+            }   
+        
+            return 0;
+        }
+        
+        // gcc ffmpeg_file.c -o ffmpeg_file `pkg-config --libs libavformat` -lavutil
+        
+        // gcc ffmpeg_file.c -o ffmpeg_file `pkg-config --libs libavformat` `pkg-config --libs libavutil`
+        ```
+
+- 文件重命名
+
+    - avpriv_io_move()
+
+    - ```c
+        #include <stdio.h>                                                                     
+        #include <libavformat/avformat.h>
+        #include <libavutil/log.h>
+        
+        int main(int argc, char* argv[])
+        {
+            // 删除一个文件
+            int ret;
+            ret = avpriv_io_delete("./mydeletedFile.txt");
+            if(ret < 0){
+                av_log(NULL, AV_LOG_ERROR, "Failed to delete file mydeletedFile.txt\n");
+                return -1;
+            }
+            // 成功删除文件后也打个 log
+            av_log(NULL, AV_LOG_INFO, "Success to delete mydeletedFile.txt\n");
+        
+            // 文件重命名
+            ret = avpriv_io_move("myRename.txt","newName.txt");
+            if( ret < 0){
+                av_log(NULL, AV_LOG_ERROR, "Failed to rename\n");
+                return -1;
+            }
+            // 成功命名也打个 log                                                              
+            av_log(NULL, AV_LOG_INFO, "Success to rename!\n");
+        
+            return 0;
+        }
+        
+        ```
+
+- 操作目录重要函数
+
+    - avio_open_dir(): 打开目录
+    - avio_read_dir(): 读取目录中每一项的信息
+    - avio_close_dir(): 关闭目录
+
+- 操作目录重要结构体
+
+    - AVIODirContext: 操作目录的上下文
+    - AVIODirEntry: 目录项，用于存放文件名，文件大小信息等
+
+- 实战：实现简单的 `ls` 命令
+
+    - ```c
+        #include <libavutil/log.h>                                                                                                                                     
+        #include <libavformat/avformat.h>
+        
+        int main(int argc, char* argv[])
+        {
+            // 声明上下文
+            AVIODirContext *ctx = NULL;
+            int ret;
+        
+            // 设置日志级别
+            av_log_set_level( AV_LOG_INFO);
+            
+            // 上下文 要操作的目录
+            ret = avio_open_dir(&ctx, "./", NULL);
+            if (ret < 0){
+                // av_err2str(): 函数将错误码数字，转换成字符串
+                av_log(NULL, AV_LOG_ERROR, "Cant open dir:%s\n", av_err2str(ret));
+                return -1;
+            }
+            // 成功打开目录， 一项一项访问目录中文件
+            AVIODirEntry *entry = NULL; // entry 目录中的每一项
+            while( 1 ){
+            ret = avio_read_dir(ctx, &entry);
+            if (ret < 0){
+                av_log(NULL, AV_LOG_ERROR, "Cann't read dir:%s\n", av_err2str(ret));
+                goto __fail;
+            }
+        
+            if (!entry){
+                break;
+            }
+        
+            av_log(NULL, AV_LOG_INFO, "%12"PRId64" %s \n",
+                entry->size,
+                entry->name);
+            avio_free_directory_entry(&entry);
+        
+            }
+            
+        __fail:
+            avio_close_dir(&ctx);
+                                                                                                                                                                       
+            return 0;
+        }
+        ```
+
         
 
