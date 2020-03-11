@@ -366,5 +366,90 @@ ffmpeg -i rtmp://server/live/streamName -c copy save.mp4
     - `vsplit`: 竖向切换窗口
     - 窗口间跳转：` ctrl ww` / `ctrl w [hjkl]`
 
+## 四、C 语言基础
 
+### 4.1 常用基本类型
+
+- short、int、long
+- float、double
+- char
+- void
+
+### 4.2 内存管理
+
+<img src="assets/4.2内存管理.png" style="zoom:75%;" />
+
+```c
+#include <stdio.h>                                                      #include <stdlib.h>
+int main(int argc, char* argv[])
+{
+     int* p_a, *p_b;
+     printf("addr of p_a:%p\n", &p_a);
+     printf("addr of p_b:%p\n\n", &p_b);
+    
+     // 为指针申请内存空间
+     p_a = (int*)malloc(sizeof(int));
+     p_b = (int*)malloc(sizeof(int));
+     
+     printf("p_a 指向的内存区域是:%p\n", p_a);
+     printf("p_b 指向的内存区域是:%p\n\n", p_b);
+     // 为申请的内存空间赋值
+     *p_a = 99;
+     *p_b = 88;
+     printf("p_a 指向的空间中存储的数据是:%d\n", *p_a);                             
+     printf("p_b 指向的空间中存储的数据是:%d\n\n", *p_b);
+ 
+     return 0;
+}
+```
+
+### 4.3 指针
+
+- 指针的物理意义
+    - 它就是内存中的一个地址
+- 指针本身运算
+    - 指针可进行 `+`、`-`、`*`运算
+- 指针所指向内容
+    - 指针所指向的内容可以进行`+`、`-`、`*`、`/`
+
+### 4.4 编译命令
+
+```
+gcc -g -O2 -o app test.c -I... -L... -l
+#-g: 输出文件中的调试信息
+#-O: 对输出文件做指令优化，默认 O1 不对指令进行优化 ；O2 做第2 级别优化
+#-o: 输出文件名字
+#-I: 指定头文件位置 （第三方库头文件，或者自己写的头文件不在一起 需要指定头文件位置）
+#-L: 指定第三方库文件位置 
+#-l: 指明具体只用的库
+```
+
+### 4.5 编译过程
+
+- 预编译
+    - 将头文件与源代码拷贝到一起
+- 编译
+- 链接，动态链接库 / 静态链接库
+
+ ## 五、FFmpeg 多媒体文件处理
+
+### 5.1 初级开发介绍
+
+- FFmpeg 日志的使用及目录操作
+- 介绍 FFmpeg 的基本概念及常用的结构体
+- 对复用 / 解复用及流操作的各种实践
+
+- FFmpeg 代码结构
+
+    - |      库       |                       功能                        |
+        | :-----------: | :-----------------------------------------------: |
+        |  libavcodec   |           提供了一系列**编码器**的实现            |
+        |  libavformat  | 实现在**流协议**、**容器格式**及**基本 IO 访问**  |
+        |   libavutil   | 包括了**hash 器**、**解码器**、和**各种工具函数** |
+        |  libavfilter  |            提供了**各种音视频过滤器**             |
+        |  libavdevice  |    提供了**访问捕获设备**和**回放设备**的接口     |
+        | libswresample |            提供了**混音**和**重采样**             |
+        |  libswscale   |         实现了**色彩转换**和**缩放**功能          |
+
+        
 
