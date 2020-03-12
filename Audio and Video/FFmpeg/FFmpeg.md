@@ -669,11 +669,11 @@ int main(int argc, char* argv[])
 {
 	int audio_index = 0;
     // 初始 log 级别
+    av_log_set_level(AV_LOG_INFO);
     av_register_all();
  
     AVFormatContext *fmt_ctx = NULL;
-    // para1:为上下文结构体分配空间；para2:指定要打开的视频文件；para3:输入文件格式
-    // para3: 设置为 NULl，程序则根据文件后缀名推断程序类型; para4:设置命令行参数
+    
      
     // Step 1: 从命令行获取两个参数
     // argv: 第一个参数是文件名，第二及以后是程序真正的参数
@@ -688,7 +688,8 @@ int main(int argc, char* argv[])
     if (!src || !dst){
         av_log(NULL, AV_LOG_ERROR, "src or dst is NULL! \n");
     }
- 
+ 	// para1:为上下文结构体分配空间；para2:指定要打开的视频文件；para3:输入文件格式
+    // para3: 设置为 NULl，程序则根据文件后缀名推断程序类型; para4:设置命令行参数
     int ret = avformat_open_input(&fmt_ctx, src, NULL, NULL );
 	if (ret < 0){
         return -1;
@@ -697,17 +698,14 @@ int main(int argc, char* argv[])
      
     // 打开多媒体成功后，创建一个新的二进制文件
     FILE* dst_fd = fopen(dst,"wb");
-    if (dst_fd){
+    if ( !dst_fd ){
         av_log(NULL, AV_LOG_ERROR, "Cann't open out file!\n");
         avformat_close_input(&fmt_ctx);
         return -1;
     }
     //Step 2: 得到我们想处理的流
     ret = av_find_best_stream(fmt_ctx,AVMEDIA_TYPE_AUDIO, -1,-1, NULL,0 );
-    if(ret < 0 ){
-        av_log(NULL, AV_LOG_ERROR, "Cann't find the best stream!\n");
-		return -1;
-	}
+   
     if(ret < 0 ){
         av_log(NULL, AV_LOG_ERROR, "Cann't find the best stream!\n");
         avformat_close_input(&fmt_ctx);
@@ -736,7 +734,7 @@ int main(int argc, char* argv[])
 		fclose(dst_fd);
 	}
 	return 0;
- }
+}
 ```
 
 
