@@ -563,7 +563,7 @@ av_log(NULL, AV_LOG_INFO, "...%s\n", op)
         int main(int argc, char* argv[])
         {
             // 声明上下文
-            AVIODirContext *ctx = NULL;
+            AVIODirContext  *ctx = NULL;
             int ret;
         
             // 设置日志级别
@@ -603,5 +603,141 @@ av_log(NULL, AV_LOG_INFO, "...%s\n", op)
         }
         ```
 
-        
+### 5.4 多媒体 文件的基本概念
+
+- 多媒体文件其实是个**容器**，容器中可以放，**音频数据**、**视频数据**、**字母数据**等。
+- 在容器里有很多**流 （Stream / Track）**又称**轨**
+- 每种流是由不同的**编码器编码**的
+- 从流中读出的数据成为**包**
+- 在一个包中包含着**一个或多个帧**
+- 几个重要的结构体
+    - `AVFormatContext`：格式上下文，连接多个 API 之间的桥梁。例如打开多媒体文件时，首先创建一个 `AVFormatContext` 上下文，把基本信息放到上下文中，这样读取数据流时就要将上下文传到 FFmpeg 函数里，这样它就知道我在处理这个多媒体而不是别的多媒体。
+    - `AVStream`:  流，或轨。打开一个多媒体文件后，所有的流都暴露在我们眼前，通过 `AVStream` 读取。
+    - `AVPacket`: 包，从流中可以拿到一个个包。
+
+- FFmpeg 操作流数据的基本步骤
+
+    <img src="assets/5.4FFmpeg操作流的基本步骤.png" style="zoom:75%;" />
+
+### 5.5 [实战] 打印音 / 视频 Meta 信息
+
+- `av_register_all()`: 该函数将 FFmpeg 中所定义的**编解码库**、**格式库**、**格式协议**、**网络协议**全部注册到程序中。**所有 FFmpeg 程序必须首先注册**
+- `avformat_open_input()`: 打开一个多媒体文件，根据文件后缀名识别多媒体格式，然后输出 `AVFormatContxt`结构体；`avformat_close_input()`
+- `av_dump_format()`: 将多媒体文件中的 meta 信息打印出来
+
+```c
+#include <libavutil/log.h>
+#include <libavformat/avformat.h>
+
+int main(int argc, char* argv[])
+{
+	// 初始 log 级别
+	av_log_set_level(AV_LOG_INFO);
+	
+	av_register_all();
+
+	AVFormatContext *fmt_ctx = NULL;
+	// para1:为上下文结构体分配空间；para2:指定要打开的视频文件；para3:输入文件格式
+	// para3: 设置为 NULl，程序则根据文件后缀名推断程序类型; para4:设置命令行参数
+	int ret = avformat_open_input(&fmt_ctx, "/home/annjeff/Video/dream.mp4",NULL, NULL );
+	if( ret < 0){
+		av_log(NULL, AV_LOG_ERROR, "Cann't open file:%s\n", av_err2str(ret));
+		return -1;
+	}
+	// para2:流的索引值；para3:输入文件名字；para4：指定是输入流还是输出流（入0出1）
+	av_dump_format(fmt_ctx, 0,"/home/annjeff/Video/dream.mp4",  0);
+	avformat_close_input(&fmt_ctx);
+
+	return 0;
+}
+```
+
+### 5.6 [实战] 抽取音频数据
+
+- `av_init_packet()`: 初始化一个**数据包结构体**，从多媒体文件读取的每一个数据包， 都可以放在**被初始化的包结构体里**。
+- `av_find_best_stream()`：在多媒体文件中找到**最好的一路流**
+- `av_read_frame()`: 将流中的一个个数据包获取到，获取到数据包就可以做一些处理。
+- `av_packet_unref()`: 每次当我们通过 `av_read_frame()` 从我们想要获取的流中读取数据后，数据包就会被增加引用计数。当我们不使用时，调用`av_packet_unref()` 将引用数 -1 ，FFmpeg 观察到引用计数为 0 时，就会释放相应的资源。
+
+```c
+#include <stdio.h>
+#include <libavutil/log.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+
+int main(int argc, char* argv[])
+{
+	int audio_index = 0;
+    // 初始 log 级别
+    av_register_all();
+ 
+    AVFormatContext *fmt_ctx = NULL;
+    // para1:为上下文结构体分配空间；para2:指定要打开的视频文件；para3:输入文件格式
+    // para3: 设置为 NULl，程序则根据文件后缀名推断程序类型; para4:设置命令行参数
+     
+    // Step 1: 从命令行获取两个参数
+    // argv: 第一个参数是文件名，第二及以后是程序真正的参数
+     if (argc < 3){
+	    av_log(NULL, AV_LOG_ERROR, "The number of input fileName less than three\n");
+        return -1;
+    }
+     
+	char *src = argv[1];
+	char *dst = argv[2];
+
+    if (!src || !dst){
+        av_log(NULL, AV_LOG_ERROR, "src or dst is NULL! \n");
+    }
+ 
+    int ret = avformat_open_input(&fmt_ctx, src, NULL, NULL );
+	if (ret < 0){
+        return -1;
+    }
+    av_dump_format(fmt_ctx, 0,"/home/annjeff/Video/dream.mp4",  0);
+     
+    // 打开多媒体成功后，创建一个新的二进制文件
+    FILE* dst_fd = fopen(dst,"wb");
+    if (dst_fd){
+        av_log(NULL, AV_LOG_ERROR, "Cann't open out file!\n");
+        avformat_close_input(&fmt_ctx);
+        return -1;
+    }
+    //Step 2: 得到我们想处理的流
+    ret = av_find_best_stream(fmt_ctx,AVMEDIA_TYPE_AUDIO, -1,-1, NULL,0 );
+    if(ret < 0 ){
+        av_log(NULL, AV_LOG_ERROR, "Cann't find the best stream!\n");
+		return -1;
+	}
+    if(ret < 0 ){
+        av_log(NULL, AV_LOG_ERROR, "Cann't find the best stream!\n");
+        avformat_close_input(&fmt_ctx);
+        fclose(dst_fd);
+        return -1;
+    }
+    audio_index = ret;
+                                                                                    
+    AVPacket pkt;
+    av_init_packet(&pkt);
+    while(av_read_frame(fmt_ctx, &pkt) >= 0 ){
+        if ( pkt.stream_index == audio_index){
+			int len = fwrite(pkt.data, 1, pkt.size, dst_fd);
+			//Step 3: 将获取的音频数据输出到 acc file
+			if (len != pkt.size){
+				av_log(NULL, AV_LOG_WARNING, "warning, length of data is not equal size of pkt!\n");
+        }
+    }
+
+	av_packet_unref(&pkt); // 减引用计数
+	 
+	 }
+	avformat_close_input(&fmt_ctx);	
+	// 关闭目标文件
+	if (dst_fd){
+		fclose(dst_fd);
+	}
+	return 0;
+ }
+```
+
+
 
