@@ -737,5 +737,10 @@ int main(int argc, char* argv[])
 }
 ```
 
+### 5.7[实战] 抽取视频数据
 
+- `Start code`: 视频抽取后，由一帧一帧的视频帧组成，如何区分每一帧呢？我们可以**在每一帧前加帧的长度信息**、或者在**每一帧前加关键字或特征码**，此处 `Start code`:属于**特征码**
+- `SPS / PPS`: 作用是：**解码的视频参数,视频帧的宽高、帧率等存放于 SPS / PPS 中**
+- `codec->extradata`: FFmpeg 从 `codec->extradata` 中获取 `SPS / PPS`
+- 
 
