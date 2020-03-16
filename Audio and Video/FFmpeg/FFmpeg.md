@@ -1318,9 +1318,11 @@ int cut_video(double from_seconds, double end_seconds, const char* in_filename, 
     AVFormatContext *ifmt_ctx = NULL, *ofmt_ctx = NULL;
     AVPacket pkt;
     int ret, i;
-
+	
+    // 注册所有编解码器
     av_register_all();
-
+	
+    // 打开多媒体文件，获得输入文件上下文
     if ((ret = avformat_open_input(&ifmt_ctx, in_filename, 0, 0)) < 0) {
         fprintf(stderr, "Could not open input file '%s'", in_filename);
         goto end;
@@ -1332,7 +1334,8 @@ int cut_video(double from_seconds, double end_seconds, const char* in_filename, 
     }
 
     av_dump_format(ifmt_ctx, 0, in_filename, 0);
-
+	
+    // 输出文件，拿到输出文件的上下文
     avformat_alloc_output_context2(&ofmt_ctx, NULL, NULL, out_filename);
     if (!ofmt_ctx) {
         fprintf(stderr, "Could not create output context\n");
@@ -1341,7 +1344,9 @@ int cut_video(double from_seconds, double end_seconds, const char* in_filename, 
     }
 
     ofmt = ofmt_ctx->oformat;
-
+	
+    // 根据输入文件的上下文，可以得到输入文件有几路流，输出文件创建同样多的流
+    // 拷贝每一路流
     for (i = 0; i < ifmt_ctx->nb_streams; i++) {
         AVStream *in_stream = ifmt_ctx->streams[i];
         AVStream *out_stream = avformat_new_stream(ofmt_ctx, in_stream->codec->codec);
@@ -1380,6 +1385,7 @@ int cut_video(double from_seconds, double end_seconds, const char* in_filename, 
 
 
     //    int64_t start_from = 8*AV_TIME_BASE;
+    // 调到指定截取 秒 的地方，还要乘该视频的时间机
     ret = av_seek_frame(ifmt_ctx, -1, from_seconds*AV_TIME_BASE, AVSEEK_FLAG_ANY);
     if (ret < 0) {
         fprintf(stderr, "Error seek\n");
@@ -1418,6 +1424,7 @@ int cut_video(double from_seconds, double end_seconds, const char* in_filename, 
         }
 
         /* copy packet */
+        // 对时间机进行转换
         pkt.pts = av_rescale_q_rnd(pkt.pts - pts_start_from[pkt.stream_index], in_stream->time_base, out_stream->time_base, AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
         pkt.dts = av_rescale_q_rnd(pkt.dts - dts_start_from[pkt.stream_index], in_stream->time_base, out_stream->time_base, AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
         if (pkt.pts < 0) {
