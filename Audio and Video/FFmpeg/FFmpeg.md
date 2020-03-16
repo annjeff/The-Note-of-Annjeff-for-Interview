@@ -2254,7 +2254,119 @@ int main(int argc, char **argv)
 }
 ```
 
+---
 
+## 七、SDL 音视频渲染
 
+### 7.1 SDL 介绍、编译安装
 
+- `SDL` （Simple DirectMedia Layer）
+- 由 C 语言实现的跨平台的**媒体开源库**
+- 多用于**游戏开发**、**模拟器**、**媒体播放器**等多媒体领域
+- SDL 网址：`http://www.libsdl.org/`
+- 编译安装
+    - 生成 Makefile: `configure --prefix=/usr/local`
+    - 安装：`sudo make -j 8 && make install` `-j 8`: **8 线程**
+
+### 7.2 使用 SDL 基本步骤
+
+- 添加头文件：`#include <SDL.h`
+- 初始化 SDL
+- 退出 SDL（销毁 SDL）
+- SDL 用于渲染窗口
+    - `SDL_Init()`: 初始化 SDL；`SDL_Quit()`: 退出 SDL
+    - `SDL_CreateWindow()`: 创建窗口；`SDL_DestroyWindow()`:程序退出时销毁窗口
+    - `SDL_CreateRender()`: 创建一个渲染器，将图片，图像，视频帧绘制到窗口里
+
+```c
+#include <SDL.h>
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+    // 初始化 SDL 也可以是图片
+    SDL_Init(SDL_INIT_VIDEO);
+    // 创建一个窗口 
+    // 窗口标题；起始点x,y;宽，高；让窗口显示
+    SDL_Window *window = NULL;
+    window = SDL_CreateWindow("SDL2 Window",200,200,640,480,SDL_WINDOW_SHOWN)
+;                                                                             
+    if (!window){
+        printf("failed to Create window!");
+        goto __EXIT;
+    }   
+                                                                             
+    // 销毁窗口
+    SDL_DestroyWindow(window);
+
+__EXIT:
+    SDL_Quit();
+
+    return 0;
+}
+```
+
+> gcc firstSDL.c -o firstSDL `pkg-config --libs sdl2`
+>
+> 
+>
+> > 报错信息:firstSDL.c:1:10: fatal error: SDL.h: 没有那个文件或目录
+> >  #include <SDL.h>
+>
+> > 报错原因：gcc 没找到 SDL 头文件路径
+>
+> > 解决办法：`pkg-config --cflags --libs sdl2`
+> >
+> > > 加上**--cflags 参数**可以得到当前库的头文件路径 
+> > >
+> > > -D_REENTRANT -I/usr/include/SDL2 -lSDL2
+>
+> gcc firstSDL.c -o firstSDL `pkg-config --cflags --libs sdl2`
+>
+> 窗口没有显示，因为我们没有放入渲染器中。
+
+### 7.3 SDL 渲染窗口
+
+我们创建的窗口实际是在**内存中分配的一片空间**，我们真正要在屏幕上显示出来，实际要将内容**推到显卡驱动上**，显卡通过驱动程序将其显示在屏幕上。
+
+- `SDL_CreateRender()`: 创建渲染器；`SDL_DestroyRenderer()`： 销毁渲染器
+- `SDL_RenderClear()`： 我们创建了渲染器，将窗口输出到**渲染驱动**，先将**Render清空一下，防止上次遗留残余数据被输出出去**
+- `SDL_RenderPresent()`： 真正将数据推送到驱动去，驱动将数据推送到显示器上。
+
+```c
+#include <SDL.h>
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+	// 初始化 SDL 也可以是图片
+	SDL_Init(SDL_INIT_VIDEO);
+	// 创建一个窗口 
+	// 窗口标题；起始点x,y;宽，高；让窗口显示
+	SDL_Window *window = NULL;
+	window = SDL_CreateWindow("SDL2 Window",200,200,640,480,SDL_WINDOW_SHOWN);
+	if (!window){
+		printf("failed to Create window!");
+		goto __EXIT;
+	}
+
+	// 创建 Render
+	SDL_Renderer *render = NULL;
+	render = SDL_CreateRenderer(window, -1, 0);
+	SDL_RenderClear(render);
+	// 将数据推动到引擎
+	SDL_RenderPresent(render);
+
+	// 做个延迟,不然窗口显示会迅速被销毁
+	SDL_Delay(30000);
+
+	// 销毁窗口
+	SDL_DestroyWindow(window);
+
+__EXIT:
+	SDL_Quit();
+
+	return 0;
+}
+```
 
