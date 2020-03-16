@@ -1161,19 +1161,20 @@ int main(int argc, char **argv)
     out_filename = argv[2];
 
     av_register_all();
-
+	// 打开输入文件，生产输入文件的多媒体上下文
     if ((ret = avformat_open_input(&ifmt_ctx, in_filename, 0, 0)) < 0) {
         fprintf(stderr, "Could not open input file '%s'", in_filename);
         goto end;
     }
-
+	// 
     if ((ret = avformat_find_stream_info(ifmt_ctx, 0)) < 0) {
         fprintf(stderr, "Failed to retrieve input stream information");
         goto end;
     }
 
     av_dump_format(ifmt_ctx, 0, in_filename, 0);
-
+	
+    // 创建输出文件的上下文
     avformat_alloc_output_context2(&ofmt_ctx, NULL, NULL, out_filename);
     if (!ofmt_ctx) {
         fprintf(stderr, "Could not create output context\n");
@@ -1194,7 +1195,7 @@ int main(int argc, char **argv)
         AVStream *out_stream;
         AVStream *in_stream = ifmt_ctx->streams[i];
         AVCodecParameters *in_codecpar = in_stream->codecpar;
-
+		// 只保留音频、视频、字母流
         if (in_codecpar->codec_type != AVMEDIA_TYPE_AUDIO &&
             in_codecpar->codec_type != AVMEDIA_TYPE_VIDEO &&
             in_codecpar->codec_type != AVMEDIA_TYPE_SUBTITLE) {
@@ -1210,7 +1211,7 @@ int main(int argc, char **argv)
             ret = AVERROR_UNKNOWN;
             goto end;
         }
-
+		// 拷贝参数
         ret = avcodec_parameters_copy(out_stream->codecpar, in_codecpar);
         if (ret < 0) {
             fprintf(stderr, "Failed to copy codec parameters\n");
@@ -1236,7 +1237,8 @@ int main(int argc, char **argv)
 
     while (1) {
         AVStream *in_stream, *out_stream;
-
+		
+        // 拿到输入文件的包
         ret = av_read_frame(ifmt_ctx, &pkt);
         if (ret < 0)
             break;
@@ -1252,13 +1254,14 @@ int main(int argc, char **argv)
         out_stream = ofmt_ctx->streams[pkt.stream_index];
         log_packet(ifmt_ctx, &pkt, "in");
 
-        /* copy packet */
+        /* copy packet */ // 音视频分别进行刻度转换
         pkt.pts = av_rescale_q_rnd(pkt.pts, in_stream->time_base, out_stream->time_base, AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
         pkt.dts = av_rescale_q_rnd(pkt.dts, in_stream->time_base, out_stream->time_base, AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
         pkt.duration = av_rescale_q(pkt.duration, in_stream->time_base, out_stream->time_base);
         pkt.pos = -1;
         log_packet(ofmt_ctx, &pkt, "out");
-
+		
+        // 将包写入文件
         ret = av_interleaved_write_frame(ofmt_ctx, &pkt);
         if (ret < 0) {
             fprintf(stderr, "Error muxing packet\n");
