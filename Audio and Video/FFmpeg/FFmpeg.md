@@ -1540,16 +1540,19 @@ int main(int argc, char **argv)
     }
     filename = argv[1];
     codec_name = argv[2];
-
+	
+    // 只注册 avcodec 相关的库，其他的库不加载入程序
     avcodec_register_all();
 
     /* find the mpeg1video encoder */
+    // 拿到具体的编解码器
     codec = avcodec_find_encoder_by_name(codec_name);
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
     }
-
+	
+    // 为编码器申请上下文空间
     c = avcodec_alloc_context3(codec);
     if (!c) {
         fprintf(stderr, "Could not allocate video codec context\n");
@@ -1562,7 +1565,9 @@ int main(int argc, char **argv)
     c->width = 352;
     c->height = 288;
     /* frames per second */
+    // 设置时间机
     c->time_base = (AVRational){1, 25};
+    // 帧率 1s 25 帧
     c->framerate = (AVRational){25, 1};
 
     /* emit one intra frame every ten frames
@@ -1571,14 +1576,19 @@ int main(int argc, char **argv)
      * then gop_size is ignored and the output of encoder
      * will always be I frame irrespective to gop_size
      */
+    // 一组帧是多少，或者多少帧需要设置一个 关键帧
     c->gop_size = 10;
+    // 设置 B 帧 前后参考帧
     c->max_b_frames = 1;
+    // 所要编码数据的格式
     c->pix_fmt = AV_PIX_FMT_YUV420P;
-
+	
+    // 如果编码器是 H264,设置编码速度为慢，可以提高编码质量
     if (codec->id == AV_CODEC_ID_H264)
         av_opt_set(c->priv_data, "preset", "slow", 0);
 
     /* open it */
+    // 打开编码器
     if (avcodec_open2(c, codec, NULL) < 0) {
         fprintf(stderr, "Could not open codec\n");
         exit(1);
@@ -1625,7 +1635,7 @@ int main(int argc, char **argv)
                 frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
             }
         }
-
+		// 本例题是程序造的，不是来自 Camera
         /* Cb and Cr */
         for (y = 0; y < c->height/2; y++) {
             for (x = 0; x < c->width/2; x++) {
@@ -1637,6 +1647,7 @@ int main(int argc, char **argv)
         frame->pts = i;
 
         /* encode the image */
+        // got_output 可以判断压缩是否成功
         ret = avcodec_encode_video2(c, &pkt, frame, &got_output);
         if (ret < 0) {
             fprintf(stderr, "Error encoding frame\n");
