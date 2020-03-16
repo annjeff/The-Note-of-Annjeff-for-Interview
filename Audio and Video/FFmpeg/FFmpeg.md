@@ -2136,12 +2136,14 @@ int main(int argc, char **argv)
     avcodec_register_all();
 
     /* find the MP2 encoder */
-    codec = avcodec_find_encoder(AV_CODEC_ID_MP2);
+    //codec = avcodec_find_encoder(AV_CODEC_ID_MP2);
+    codec = avcodec_find_encoder_by_name("libfdk_aac");
     if (!codec) {
         fprintf(stderr, "Codec not found\n");
         exit(1);
     }
-
+	
+    // 拿到编解码器上下文
     c = avcodec_alloc_context3(codec);
     if (!c) {
         fprintf(stderr, "Could not allocate audio codec context\n");
@@ -2160,7 +2162,9 @@ int main(int argc, char **argv)
     }
 
     /* select other audio parameters supported by the encoder */
+    // 设置采样率
     c->sample_rate    = select_sample_rate(codec);
+    // 设置声道数
     c->channel_layout = select_channel_layout(codec);
     c->channels       = av_get_channel_layout_nb_channels(c->channel_layout);
 
