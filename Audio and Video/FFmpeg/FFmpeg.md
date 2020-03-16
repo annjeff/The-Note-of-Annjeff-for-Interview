@@ -65,7 +65,7 @@
 ### 1.4 FFmpeg Ubuntu 源码安装
 
 ```
-./configure --prefix=/home/annjeff/FFmpeg --enable-shared --enable-gpl --enable-version3 --enable-sdl2 --enable-fontconfig --enable-gnutls --enable-iconv --enable-libass  --enable-libbluray  --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb  --enable-libopus --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libtheora --enable-libtwolame --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-lzma --enable-zlib --enable-gmp --enable-libvorbis --enable-libvo-amrwbenc  --enable-libspeex --enable-libxvid --enable-libaom     --enable-avisynth --enable-libopenmpt
+./configure --prefix=/home/annjeff/FFmpeg --enable-shared --enable-gpl --enable-version3 --enable-sdl2 --enable-fontconfig --enable-gnutls --enable-iconv --enable-libass  --enable-libbluray  --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb  --enable-libopus --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libtheora --enable-libtwolame --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-lzma --enable-zlib --enable-gmp --enable-libvorbis --enable-libvo-amrwbenc  --enable-libspeex --enable-libxvid --enable-libaom     --enable-avisynth --enable-libopenmpt --enable-libfdk-aac --enable-nonfree
 ```
 
 
@@ -477,7 +477,7 @@ av_log(NULL, AV_LOG_INFO, "...%s\n", op)
 
 > Note: `pkg-config`本身是一个 linux 命令,其功能是**用于获得某一个库/模块的所有编译相关的信息**.
 >
-> pkg-config --list libavformat 
+> pkg-config --libs libavformat 
 >
 > // 可以找到 libavformat 库的路径
 
@@ -605,7 +605,7 @@ av_log(NULL, AV_LOG_INFO, "...%s\n", op)
 
 ### 5.4 多媒体 文件的基本概念
 
-- 多媒体文件其实是个**容器**，容器中可以放，**音频数据**、**视频数据**、**字母数据**等。
+- 多媒体文件其实是个**容器**，容器中可以放，**音频数据**、**视频数据**、**字幕数据**等。
 - 在容器里有很多**流 （Stream / Track）**又称**轨**
 - 每种流是由不同的**编码器编码**的
 - 从流中读出的数据成为**包**
@@ -1111,5 +1111,14 @@ int main(int argc, char *argv[])
 }
 ```
 
+### 5.8 [实战]将 MP4 转成 FLV 格式
 
+- `avformat_alloc_output_context2()`: 分配一个输出文件的上下文空间
+- `avformat_free_context()`: 释放分配的输出上下文，防止内存泄漏
+- `avformat_new_stream()`： 生成的新多媒体文件也有很多轨，来保存轨
+- `avcodec_parameters_copy()`: 在拷贝 流 的同时，还要将其参数（SPS、PPS）等拷贝过去，我们只是换了外壳，里面数据没变，所以需要需要拷贝参数。
+- `avformat_write_header()`：所有多媒体格式，都有多美体文件头，本函数就负责生产多媒体文件头。
+- `av_write_frame()`：写入数据
+- `av_interleaved_write_frame()`：写入数据（用的比较常见）
+- `av_write_trailer()`：写入多媒体尾部信息
 
