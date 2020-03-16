@@ -2370,3 +2370,168 @@ __EXIT:
 }
 ```
 
+### 7.4 SDL 处理事件
+
+- SDL 事件基本原理
+    - SDL 将**所有事件都放在一个队列中**
+    - 所有对事件的操作，**其实就是对队列的操作**
+- SDL 事件种类
+    - `SDL_WindowEvent`: 窗口事件
+    - `SDL_KeyboardEvent`: 键盘事件
+    - `SDL_MouseMotionEvent`: 鼠标事件
+- SDL 事件处理
+    - `SDL_PollEvent`: 轮寻，等一段时间扫描一次
+    - `SDL_WaitEvent`: 事件触发机制，事件来了，发送信号
+
+```c
+#include <SDL.h>
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+	// 初始化 SDL 也可以是图片
+	SDL_Init(SDL_INIT_VIDEO);
+	// 创建一个窗口 
+	// 窗口标题；起始点x,y;宽，高；让窗口显示
+	SDL_Window *window = NULL;
+	window = SDL_CreateWindow("SDL2 Window",200,200,640,480,SDL_WINDOW_SHOWN);
+	if (!window){
+		printf("failed to Create window!");
+		goto __EXIT;
+	}
+
+	// 创建 Render
+	SDL_Renderer *render = NULL;
+	render = SDL_CreateRenderer(window, -1, 0);
+	SDL_RenderClear(render);
+	// 将数据推动到引擎
+	SDL_RenderPresent(render);
+
+	// 处理事件
+	int quit = 1;
+	SDL_Event event;
+	do{
+		SDL_WaitEvent(&event);
+		switch(event.type){
+			case SDL_QUIT:
+				quit = 0;
+				break;
+			default:
+				SDL_Log("event type is %d",event.type);
+		}
+	}while(quit);
+
+	// 销毁窗口
+	SDL_DestroyWindow(window);
+
+__EXIT:
+	SDL_Quit();
+
+	return 0;
+}
+// gcc event_SDL.c -o ./build/event_SDL `pkg-config --cflags --libs sdl2`
+```
+
+### 7.5 纹理渲染
+
+- SDL 渲染基本原理
+
+    <img src="assets/7.5 纹理渲染.png" style="zoom:61%;" />
+
+- 纹理相关 API
+    - `SDL_CreateTexture()`: 创建纹理
+        - format: YUV 或 RGB
+        - access: Texture 类型、Target , Stream
+    - `SDL_DestoryTexture()`: 销毁纹理
+- SDL 渲染相关的 API
+    - `SDL_SetRenderTarget()`: 交给渲染器去渲染，渲染器目标点（默认是向创建的窗口渲染），因为使用纹理，告诉渲染器，向纹理上渲染
+    - `SDL_RenderClear()`: 一种是清屏，另一种是特殊的刷子，设置什么颜色，就用什么颜色刷干净。
+    - `SDL_RednerCopy()`: 将纹理拷贝到显卡，显卡拿到纹理数据后计算
+    - `SDL_RenderPresent()`：将渲染好的图像显示
+
+```c
+#include <SDL.h>
+#include <stdio.h>
+
+int main(int argc, char* argv[])
+{
+	// 初始化 SDL 也可以是图片
+	SDL_Init(SDL_INIT_VIDEO);
+	// 创建一个窗口 
+	// 窗口标题；起始点x,y;宽，高；让窗口显示
+	SDL_Window *window = NULL;
+	window = SDL_CreateWindow("SDL2 Window",200,200,640,480,SDL_WINDOW_SHOWN);
+	if (!window){
+		printf("failed to Create window!");
+		goto __EXIT;
+	}
+
+	// 创建 Render
+	SDL_Renderer *render = NULL;
+	render = SDL_CreateRenderer(window, -1, 0);
+	SDL_RenderClear(render);
+	// 将数据推动到引擎
+	SDL_RenderPresent(render);
+
+	// 处理事件
+	int quit = 1;
+	SDL_Event event;
+
+	// 创建纹理
+	SDL_Texture *texture = SDL_CreateTexture(render, 
+											SDL_PIXELFORMAT_RGBA8888, 
+										    SDL_TEXTUREACCESS_TARGET,
+											640,
+								    		480);
+	if (!texture){
+		SDL_Log("Failed to Create Texture!");
+		goto __RENDER;
+	}
+
+	do{
+		//SDL_WaitEvent(&event);
+		SDL_PollEvent(&event);
+		switch(event.type){
+			case SDL_QUIT:
+				quit = 0;
+				break;
+			default:
+				SDL_Log("event type is %d",event.type);
+		}
+		SDL_Rect rect;
+		rect.w = 30;
+		rect.h = 30;
+		rect.x = rand() % 600;
+		rect.y = rand() % 450;
+
+		// 对纹理填充颜色
+		SDL_SetRenderTarget(render, texture);
+		SDL_SetRenderDrawColor(render,0 ,0, 0, 0);
+		SDL_RenderClear(render);
+		// 绘制方块
+		SDL_RenderDrawRect(render, &rect);
+		SDL_SetRenderDrawColor(render, 255 ,0 , 0,0);
+		SDL_RenderFillRect(render, &rect);
+
+		// 将纹理输出到窗口
+		// 恢复到默认渲染目标(显卡)
+		SDL_SetRenderTarget(render, NULL);
+		SDL_RenderCopy(render, texture, NULL, NULL);
+
+		SDL_RenderPresent(render);
+
+	}while(quit);
+
+
+	// 销毁窗口
+__RENDER:
+	SDL_DestroyWindow(window);
+
+__EXIT:
+	SDL_Quit();
+
+	return 0;
+}
+// gcc texture_SDL.c -o ./build/texture_SDL `pkg-config --cflags --libs sdl2`
+```
+
