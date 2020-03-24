@@ -60,5 +60,72 @@ int main(int argc, char const *argv[])
 }
 ```
 
+### 1.2 读文本文件
+
+> 读文本文件步骤如下：
+>
+> 1. 包含头文件：**`#include <fstream>`**
+> 2. 创建流对象：**`ifstream ifs;`**
+> 3. 打开文件并判断文件是否打开成功：**`ifs.open("文件路径"，打开方式);if(ifs.is_open()){打开成功}`**
+> 4. 读取数据
+> 5. 关闭文件：**`ifs.close();`**
+
+```c++
+#include <iostream>
+
+// s1.包含头文件
+#include <fstream>
+
+int main(int argc, char const *argv[])
+{
+    //s2.创建流对象 ！！！勿忘 std::作用域
+    std::ifstream ifs;
+
+    //s3.打开文件，并判断文件是否打开成功
+    ifs.open("writedContent.txt", std::ios::in);
+    if (!ifs.is_open())
+    {
+        std::cout << "Failed to open File." << std::endl;
+        return -1;
+    }
+
+    //s4. 读取文件，有四种方式
+    // 方式一：每当遇到空格就开始下一次循环
+    // char buf[1024] = {0};
+    // while(ifs >> buf)
+    // {
+    //     std::cout << buf << std::endl;
+    // }
+
+    // 方式二：可以完成按行读取
+    // char buf[1024] = {0};
+    // while (ifs.getline(buf, sizeof(buf)))
+    // {
+    //     std::cout << buf << std::endl;
+    // }
+
+    // 方式三：使用全局的 getline 函数
+    // std::string buf;
+    // while (getline(ifs, buf))
+    // {
+    //     std::cout << buf << std::endl;
+    // }
+
+    // 方式四：不推荐 一个字符一个字符的输出
+    char c;
+    while ((c = ifs.get()) != EOF)
+    {
+        std::cout << c << std::endl;
+    }
+    
+    
+    //s5. 关闭文件
+    ifs.close();
+
+    system("pause");
+    return 0;
+}
+```
+
 
 
