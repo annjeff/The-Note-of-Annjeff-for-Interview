@@ -127,5 +127,123 @@ int main(int argc, char const *argv[])
 }
 ```
 
+## 2. 二进制文件
+
+### 2.1 写二进制文件
+
+> 使用二进制的方式向文件中写入内容，主要**使用流对象调用成员函数 write**
+>
+> write 函数原型：`ostream& write(const char* buffer, int len)`
+>
+> 参数解释：@param1: 字符指针 buffer 指向内存中一段存储空间（需要写入文件的数据的首地址）；@param2: 指出写入的字节数
+
+```c++
+#include <iostream>
+#include <cstring>
+
+// s1. 包含头文件
+#include <fstream>
+
+class Student{
+public:
+    Student(){}
+    Student(char name[], int age)
+    {
+        strcpy(m_name, name);
+        m_age = age;
+    }
+    void printInfo()
+    {
+        std::cout <<"Name: "<<m_name << " ;Age: " <<m_age <<std::endl;
+    }
+private:
+    char m_name[20];
+    int m_age;
+};
+
+int main(int argc, char const *argv[])
+{
+    // s2. 创建输出流对象
+    std::ofstream ofs;
+
+    // s3. 打开输出文件，指定打开方式
+    ofs.open("writedBinaryContent.txt", std::ofstream::out | std::ofstream::binary);
+
+    Student stu[2] = {{"annjeff",25},{"angle",27}};
+    // s4. 写文件
+    ofs.write(reinterpret_cast<char*>(stu), sizeof(stu));
+
+    // s5. 关闭文件
+    ofs.close();
+
+
+    system("pause");
+    return 0;
+}
+```
+
+> **Note:** 在类中保存姓名，尽量使用 char 数组，避免使用 std::string，保存二进制会有问题
+
+### 2.2 读二进制文件
+
+> 读取二进制方式存储的文件，主要**使用流对象调用成员函数 read**
+>
+> read 函数的原型：`ifstream& read(char *buffer, int len)`
+>
+> 参数解释：@para1: 读取内容的存储空间；@para2: 读写的字节数
+
+```c++
+#include <iostream>
+#include <cstring>
+
+// s1. 包含头文件
+#include <fstream>
+
+class Student{
+public:
+    Student(){}
+    Student(char name[], int age)
+    {
+        strcpy(m_name, name);
+        m_age = age;
+    }
+    void printInfo()
+    {
+        std::cout <<"Name: "<<m_name << " Age: " <<m_age <<std::endl;
+    }
+private:
+    char m_name[20];
+    int m_age;
+};
+
+int main(int argc, char const *argv[])
+{
+    // s2.创建流对象 并打开要读取的文件
+    std::ifstream ifs("writedBinaryContent.txt",std::ifstream::in | std::ifstream::binary);
+
+    // s3. 判断文件是否打开成功
+    if (!ifs.is_open())
+    {
+        std::cout << "Failed to open the file." << std::endl;
+        return -1;
+    }
+    // s4.读取文件内容
+    Student stu[2];
+    ifs.read(reinterpret_cast<char*>(stu), sizeof(stu));
+
+    // s5. 显示读取的内容
+    for (size_t i = 0; i < 2; i++)
+    {
+        stu[i].printInfo();
+    }
+    
+    // s6.关闭打开的文件
+    ifs.close();
+
+    system("pause");
+    return 0;
+}
+```
+
 
 
