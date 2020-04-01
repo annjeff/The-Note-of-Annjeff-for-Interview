@@ -33,3 +33,146 @@
 > - /bin, /sbin, /usr/bin, /usr/sbin: 这是系统预设的执行文件的放置目录，比如 ls 就是在/bin/ls 目录下的。值得提出的是，/bin, /usr/bin 是给系统用户使用的指令（除root外的通用户），而/sbin, /usr/sbin 则是给root使用的指令。
 > - /var： 这是一个非常重要的目录，系统上跑了很多程序，那么每个程序都会有相应的日志产生，而这些日志就被记录到这个目录下，具体在/var/log 目录下，另外mail的预设放置也是在这里。
 
+## 2. Linux 编译使用静态库
+
+### 2.0 测试程序
+
+- 目录结构
+
+    - include 存放头文件
+
+        - head.h
+
+            - ```c
+                #ifndef __HEAD_H_
+                #define __HEAD_H_
+                int add(int a, int b);
+                int sub(int a, int b);
+                int mul(int a, int b);
+                int div(int a, int b);
+                #endif
+                ```
+
+    - src 存放源文件实现代码
+
+        - add.c
+
+            - ```c
+                #include "head.h"
+                
+                int add(int a, int b)
+                {
+                    int result = a + b;
+                    return result;
+                }
+                ```
+
+        - div.c
+
+            - ```c
+                #include "head.h"
+                int div(int a, int b)
+                {
+                    int result = a / b;
+                    return result;
+                }
+                ```
+
+        - mul.c
+
+            - ```c
+                #include "head.h"
+                int mul(int a, int b)
+                {
+                    int result = a * b;
+                    return result;
+                }
+                ```
+
+        - sub.c
+
+            - ```c
+                #include "head.h"
+                int sub(int a, int b)
+                {
+                    int result = a - b;
+                    return result;
+                }
+                ```
+
+    - lib 存放生成库文件
+
+    - main.c 主程序入口
+
+        - ```c
+            #include <stdio.h>
+            #include "head.h"
+            
+            int main(void)
+            {
+                int sum = add(2, 24);
+                printf("sum = %d\n", sum);
+                return 0;
+            }
+            
+            ```
+
+### 2.1 静态库的基本概念
+
+> 静态库是指在我们的应用中，有一些**公共代码是需要反复使用**，就把这些代码**编译为“库”文件**；在链接步骤中，**链接器将从库文件取得所需的代码，复制到生成的可执行文件中的这种库**。（百度百科）
+
+- Linux 下静态库的命名规则：**`lib`**+**`库名字`**+**`.a`**。如：libMyCalc.a
+
+### 2.2 静态库的基本制作流程
+
+- 生成目标文件即`.o`文件：**`gcc -c *.c `**
+- 将生成的 `.o` 文件打包：**`ar rcs 静态库名字(libMyCalc.a)  *.o`**
+- 将静态库文件和头文件发布即可
+
+### 2.3 使用静态库
+
+**`gcc main.c -Iinclude -Llib -lMyCalc -o myCalc`**
+
+- `-I`：指定头文件路径
+- `-L`：指定库文件路径
+- `-l`：指定库的具体名称
+- `-o`：指定输出文件的名字
+
+### 2.4 静态库的优缺点
+
+- 优点：
+    - 静态库直接加载到程序中，无需提供额外的库文件
+    - 运行速度快，无库加载过程
+- 缺点：
+    - 由于将使用的库文件编译到程序中了，程序比较臃肿
+
+## 3. Linux 编译使用动态共享库
+
+### 3.1 动态共享库的基本概念
+
+> 程序编制一般需经编辑、编译、连接、加载和运行几个步骤。在我们的应用中，有一些公共代码是需要反复使用，就把这些代码编译为“库”文件；在连接步骤中，连接器将从库文件取得所需的代码，复制到生成的可执行文件中。这种库称为静态库，其特点是可执行文件中包含了库代码的一份完整拷贝；缺点就是被多次使用就会有多份冗余拷贝。
+> 为了克服这个缺点可以采用**动态共享库**。这个时候**连接器仅仅是在可执行文件中打上标志，说明需要使用哪些动态连接库；当运行程序时，加载器根据这些标志把所需的动态连接库加载到内存**。（百度百科）
+
+- Linux 下动态共享库命名规则：**`lib`+ `库的名字MyCalc` + `.so`**
+
+### 3.2 动态共享库的制作流程
+
+- 生成位置无关的目标文件：**`gcc -fPIC -c *.c`**
+- 将位置无关的目标文件打包成共享库：**`gcc -shared -o libMyCalc.so *.o -I../include `**
+
+### 3.3 使用动态共享库
+
+- 解决动态共享库无法加载的问题
+    - 方案1：将自己生成的 `.so` 文件放到系统 `lib` 库目录下，但是此类方法不推荐使用。
+    - 方案2：临时使用 `export LD_LIBRARY_PATH=/home/xxx/xxx`，关闭终端即失效
+    - 方案3：不常用方法，永久使用 修改**家目录下 `.bashrc`文件**，添加 `export LD_LIBRARY_PATH=动态库绝对路径` **重启终端生效**
+    - 方案4：
+        - 找到**动态连接器**的配置文件：`/etc/ld.so.conf`
+        - 动态库的路径写到配置文件中 绝对路径
+        - 更新**`sudo ldconfig -v`**
+- 动态共享库使用：**` gcc main.c -Llib -lMyCalc -o myCalc -Iinclude`**
+
+### 3.4 动态共享库优缺点
+
+- 优点：使用动态共享库的体积小，且多个程序可共享代码，节省空间
+- 缺点：加载动态共享库需要时间消耗，且需要配置动态共享库位置
