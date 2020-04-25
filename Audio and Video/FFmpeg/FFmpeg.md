@@ -65,7 +65,93 @@
 ### 1.4 FFmpeg Ubuntu 源码安装
 
 ```
-./configure --prefix=/home/annjeff/FFmpeg --enable-shared --enable-gpl --enable-version3 --enable-sdl2 --enable-fontconfig --enable-gnutls --enable-iconv --enable-libass  --enable-libbluray  --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb  --enable-libopus --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libtheora --enable-libtwolame --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-lzma --enable-zlib --enable-gmp --enable-libvorbis --enable-libvo-amrwbenc  --enable-libspeex --enable-libxvid --enable-libaom     --enable-avisynth --enable-libopenmpt --enable-libfdk-aac --enable-nonfree
+# ERROR: gmp not found
+sudo apt-get install  libgmp3-dev
+
+# ERROR: gnutls not found using pkg-config
+sudo apt install pkg-config
+sudo apt install gnutls-bin
+
+# ERROR: aom >= 1.0.0 not found using pkg-config
+sudo aptitude install libaom-dev
+
+# ERROR: libass not found using pkg-config
+sudo aptitude install libass-dev
+
+# ERROR: libbluray not found using pkg-config
+sudo aptitude install libbluray-dev
+
+# ERROR: libfdk_aac not found
+sudo aptitude install libfdk-aac-dev
+
+ERROR: libmp3lame >= 3.98.3 not found
+sudo aptitude install libmp3lame-dev
+
+ERROR: libopencore_amrnb not found
+sudo aptitude install libopencore-amrnb-dev
+
+ERROR: libopencore_amrwb not found
+sudo aptitude install libopencore-amrwb-dev
+
+ERROR: libopenmpt >= 0.2.6557 not found using pkg-config
+sudo aptitude install  libopenmpt-dev
+
+ERROR: opus not found using pkg-config
+sudo aptitude install libopus-dev
+
+ERROR: shine not found using pkg-config
+sudo aptitude install libshine-dev
+
+ERROR: libsnappy not found
+sudo aptitude install libsnappy-dev
+
+ERROR: libsoxr not found
+sudo aptitude install libsoxr-dev
+
+ERROR: speex not found using pkg-config
+sudo aptitude install libspeex-dev
+
+ERROR: libtheora not found
+sudo aptitude install libtheora-dev
+
+ERROR: libtwolame not found
+sudo aptitude install libtwolame-dev
+
+ERROR: libvo_amrwbenc not found
+sudo aptitude install libvo-amrwbenc-dev
+
+libvpx enabled but no supported decoders found
+sudo aptitude install llibvpx-dev
+
+ERROR: libwavpack not found
+sudo aptitude install libwavpack-dev
+
+ERROR: libwebp >= 0.2.0 not found using pkg-config
+sudo aptitude install libwebp-dev
+
+ERROR: libx264 not found
+sudo aptitude install libx264-dev
+
+ERROR: x265 not found using pkg-config
+sudo aptitude install libx265-dev
+
+ERROR: libxvid not found
+sudo aptitude install libxvidcore-dev
+
+ERROR: lzma requested but not found
+sudo aptitude install liblzma-dev
+
+ffmpeg: error while loading shared libraries: libavdevice.so.58: cannot open shared object file: No such file or directory
+没有指定动态链接库的位置
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/annjeff/FFmpeg/lib
+
+export PATH=$PATH:/home/annjeff/FFmpeg/bin
+```
+
+
+
+```
+./configure --prefix=/home/annjeff/FFmpeg --enable-shared --enable-gpl --enable-version3 --enable-sdl2 --enable-fontconfig --enable-gnutls --enable-iconv --enable-libass  --enable-libbluray  --enable-libmp3lame --enable-libopencore-amrnb --enable-libopencore-amrwb  --enable-libopus --enable-libshine --enable-libsnappy --enable-libsoxr --enable-libtheora --enable-libtwolame --enable-libvpx --enable-libwavpack --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-lzma --enable-zlib --enable-gmp --enable-libvorbis --enable-libvo-amrwbenc  --enable-libspeex --enable-libxvid --enable-libaom --enable-avisynth --enable-libopenmpt --enable-libfdk-aac --enable-nonfree
 ```
 
 
